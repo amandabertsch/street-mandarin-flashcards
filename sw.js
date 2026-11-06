@@ -1,5 +1,5 @@
 // Cache-first so the app opens with no connection; refreshes the cache in the background when online.
-var CACHE = "sm-flashcards-20261106065135";
+var CACHE = "sm-flashcards-20261106070717";
 var FILES = ["./", "index.html", "manifest.webmanifest", "icon-180.png", "icon-512.png"];
 self.addEventListener("install", function(e){
   e.waitUntil(caches.open(CACHE).then(function(c){ return c.addAll(FILES); }).then(function(){ return self.skipWaiting(); }));

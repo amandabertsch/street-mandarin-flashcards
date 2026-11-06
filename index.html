@@ -92,6 +92,24 @@
   .say{background:var(--card);border:1px solid var(--line);border-radius:11px;width:44px;height:44px;color:var(--seal);display:grid;place-items:center}
   .say svg{width:18px;height:18px}
 
+  /* ---- list ---- */
+  .scan{width:100%;margin:6px 0 4px;background:var(--card);color:var(--jade);border:1px solid var(--jade);border-radius:14px;padding:12px;font-weight:600;font-size:15.5px}
+  .lst-sum{font-size:13px;color:var(--muted);margin:0 0 10px;font-variant-numeric:tabular-nums}
+  .lst-sec{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 2px 6px}
+  .rows{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+  .row{display:flex;align-items:center;gap:12px;padding:10px 6px 10px 14px;border-top:1px solid var(--line)}
+  .row:first-child{border-top:0}
+  .row .txt{flex:1;min-width:0;background:none;border:0;padding:0;text-align:left}
+  .row .rh{font-family:var(--han);font-size:21px;line-height:1.25}
+  .row .rp{font-family:var(--mono);font-size:13px;color:var(--jade);margin-left:8px}
+  .row .re{display:block;font-size:13.5px;color:var(--ink-soft);line-height:1.4;margin-top:2px}
+  .lst.hideE .row:not(.peek) .re{color:transparent;background:var(--line);border-radius:5px;width:60%;height:1.1em;margin-top:6px;overflow:hidden;white-space:nowrap;user-select:none;-webkit-user-select:none}
+  .row.kn .rh{color:var(--muted)}
+  .chk{flex:0 0 auto;width:44px;height:44px;border:0;background:none;display:grid;place-items:center;padding:0}
+  .chk i{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-style:normal;font-size:14px;font-weight:700;color:transparent;transition:background .15s,border-color .15s}
+  .row.kn .chk i{background:var(--jade);border-color:var(--jade);color:#fff}
+  .lst-empty{color:var(--muted);text-align:center;padding:30px 10px;font-size:14.5px}
+
   /* ---- done ---- */
   .done{text-align:center;padding:48px 16px}
   .done .big{font-family:var(--han);font-size:54px;color:var(--jade)}
@@ -112,6 +130,7 @@
       <p class="sub" id="homeSub"></p>
     </header>
     <button class="mixall" id="mixAll">Study everything I'm still learning</button>
+    <button class="scan" id="scanAll">☰ Scan all vocab as a list</button>
     <div id="weeks"></div>
     <p class="foot">Works offline once opened. Progress is saved on this device.<br>
       <button id="resetBtn">Reset progress</button></p>
@@ -128,6 +147,7 @@
       <button class="opt" id="optDir"></button>
       <button class="opt" id="optShuf">Shuffle</button>
       <button class="opt" id="optKnown"></button>
+      <button class="opt" id="optList">☰ List</button>
     </div>
     <div class="fc" id="card">
       <div class="fc-in">
@@ -144,6 +164,22 @@
       <button class="say" id="sayBtn" aria-label="Say it"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 00-2.5-4v8a4.5 4.5 0 002.5-4z"/></svg></button>
       <button class="lnk" id="skipBtn">Skip ›</button>
     </div>
+  </main>
+
+  <!-- LIST -->
+  <main id="list" hidden>
+    <div class="top">
+      <button class="back" id="lBack" aria-label="Back">‹</button>
+      <div class="ttl" id="lTitle"></div>
+    </div>
+    <div class="opts">
+      <button class="opt" data-f="all">All</button>
+      <button class="opt" data-f="learn">Still learning</button>
+      <button class="opt" data-f="known">Known</button>
+      <button class="opt" id="optHideE">Hide meaning</button>
+    </div>
+    <p class="lst-sum" id="lSum"></p>
+    <div class="lst" id="lBody"></div>
   </main>
 
   <!-- DONE -->
@@ -182,7 +218,7 @@
 
   var $ = function(id){ return document.getElementById(id); };
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
-  function show(id){ ["home","study","done"].forEach(function(x){ $(x).hidden = x !== id; }); window.scrollTo(0,0); }
+  function show(id){ ["home","study","done","list"].forEach(function(x){ $(x).hidden = x !== id; }); window.scrollTo(0,0); }
 
   // ---- home ----
   function renderHome(){
@@ -285,6 +321,60 @@
     if (!deck.length) { S.hideKnown = false; rebuild(); draw(true); }
   };
 
+  // ---- list view ----
+  var lPool = [], lFrom = "home", lFilter = "all", lHideE = false, lTitle = "", lSub = "";
+  function openList(cards, t, st, from){
+    lPool = cards; lTitle = t; lSub = st; lFrom = from; lFilter = "all";
+    show("list"); drawList();
+  }
+  function listSum(){
+    var k = lPool.filter(function(c){ return S.known[c.id]; }).length;
+    $("lSum").textContent = lPool.length + " words · " + k + " known · " + (lPool.length - k) + " still learning";
+  }
+  function drawList(){
+    $("lTitle").innerHTML = esc(lTitle) + "<small>" + esc(lSub) + "</small>";
+    Array.prototype.forEach.call(document.querySelectorAll("#list [data-f]"), function(b){ b.classList.toggle("on", b.dataset.f === lFilter); });
+    $("optHideE").classList.toggle("on", lHideE);
+    $("lBody").classList.toggle("hideE", lHideE);
+    listSum();
+    var cards = lPool.filter(function(c){ return lFilter === "all" || (lFilter === "known") === !!S.known[c.id]; });
+    if (!cards.length) { $("lBody").innerHTML = '<div class="lst-empty">' + (lFilter === "known" ? "Nothing marked known here yet." : "Nothing left to learn here. 好！") + '</div>'; return; }
+    var multi = cards.some(function(c){ return c.deck !== cards[0].deck; }), html = "", cur = null;
+    cards.forEach(function(c){
+      if (c.deck !== cur) {
+        if (cur) html += '</div>';
+        if (multi) html += '<div class="lst-sec">Week ' + c.deck.week + ' · ' + esc(c.deck.name) + '</div>';
+        html += '<div class="rows">'; cur = c.deck;
+      }
+      html += '<div class="row' + (S.known[c.id] ? ' kn' : '') + '" data-id="' + esc(c.id) + '">' +
+        '<button class="txt"><span class="rh">' + esc(c.h) + '</span><span class="rp">' + esc(c.p) + '</span><span class="re">' + esc(c.e) + '</span></button>' +
+        '<button class="chk" aria-label="Mark known"><i>✓</i></button></div>';
+    });
+    $("lBody").innerHTML = html + '</div>';
+  }
+  var BYID = {}; ALL.forEach(function(c){ BYID[c.id] = c; });
+  $("lBody").addEventListener("click", function(e){
+    var row = e.target.closest(".row"); if (!row) return;
+    var c = BYID[row.dataset.id];
+    if (e.target.closest(".chk")) {          // toggle known; row stays put until the filter changes
+      if (S.known[c.id]) delete S.known[c.id]; else S.known[c.id] = true;
+      save(); row.classList.toggle("kn", !!S.known[c.id]); listSum();
+    } else if (lHideE && !row.classList.contains("peek")) {
+      row.classList.add("peek");
+    } else {
+      speak(c.h);
+    }
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("#list [data-f]"), function(b){
+    b.onclick = function(){ lFilter = b.dataset.f; drawList(); };
+  });
+  $("optHideE").onclick = function(){ lHideE = !lHideE; drawList(); };
+  $("lBack").onclick = function(){
+    if (lFrom === "study") { rebuild(); show("study"); draw(true); } else { renderHome(); show("home"); }
+  };
+  $("scanAll").onclick = function(){ openList(ALL, "All vocab", "Tap ✓ to mark known", "home"); };
+  $("optList").onclick = function(){ openList(pool, title, subtitle, "study"); };
+
   // ---- speech (uses the phone's built-in Chinese voice; works offline if installed) ----
   var zhVoice = null;
   function pickVoice(){
@@ -294,9 +384,12 @@
   }
   if (window.speechSynthesis) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } else { $("sayBtn").hidden = true; }
   function say(){
-    if (!window.speechSynthesis || i >= deck.length) return;
+    if (i < deck.length) speak(deck[i].h);
+  }
+  function speak(h){
+    if (!window.speechSynthesis) return;
     speechSynthesis.cancel();
-    var u = new SpeechSynthesisUtterance(deck[i].h.replace(/\(.*?\)/g, ""));
+    var u = new SpeechSynthesisUtterance(h.replace(/\(.*?\)/g, ""));
     u.lang = "zh-CN"; if (zhVoice) u.voice = zhVoice; u.rate = .85;
     speechSynthesis.speak(u);
   }
