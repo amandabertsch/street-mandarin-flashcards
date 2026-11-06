@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>街头中文 Flashcards</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="街头中文">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f4f2ea" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#181c1d" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>
+  :root{
+    --paper:#f4f2ea; --card:#fbfaf5; --ink:#22282a; --ink-soft:#4d5658; --muted:#7c8486; --line:#e2ddce;
+    --jade:#2f7d6b; --jade-soft:#e2efe9; --seal:#c0503e; --seal-soft:#f6e4de; --gold:#b98a2e;
+    --shadow:0 1px 2px rgba(34,40,42,.05),0 8px 24px rgba(34,40,42,.07);
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    --han:"PingFang SC","Hiragino Sans GB","Songti SC","Noto Sans CJK SC",sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{--paper:#181c1d; --card:#232a2b; --ink:#eef1ee; --ink-soft:#c2cac9; --muted:#8b9492; --line:#333c3d;
+      --jade:#5fbfa8; --jade-soft:#1e2f2b; --seal:#e07a68; --seal-soft:#33221e; --gold:#d6ab5a;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35); color-scheme:dark}
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+  body{padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px))}
+  button{font:inherit;color:inherit;cursor:pointer}
+  .wrap{max-width:560px;margin:0 auto}
+  [hidden]{display:none!important}
+
+  /* ---- home ---- */
+  .mast{padding:22px 0 14px}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--jade);font-weight:600}
+  h1{font-size:28px;line-height:1.15;margin:6px 0 4px;font-weight:700;letter-spacing:-.01em}
+  h1 .cn{font-family:var(--han)}
+  .sub{color:var(--ink-soft);font-size:14.5px;margin:0}
+  .mixall{width:100%;margin:16px 0 4px;background:var(--jade);color:#fff;border:0;border-radius:14px;padding:14px;font-weight:600;font-size:16px}
+  .wk{margin-top:22px}
+  .wk-h{display:flex;align-items:baseline;gap:10px;margin:0 0 8px}
+  .wk-h .b{white-space:nowrap;flex:0 0 auto;font-family:var(--han);font-size:13px;font-weight:600;color:#fff;background:var(--jade);border-radius:7px;padding:2px 7px}
+  .wk-h .t{font-weight:600;font-size:16px}
+  .wk-h .all{white-space:nowrap;flex:0 0 auto;margin-left:auto;background:none;border:0;color:var(--jade);font-size:14px;font-weight:600;padding:4px 0}
+  .deck{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:13px 14px;margin-bottom:8px;box-shadow:var(--shadow)}
+  .deck:active{transform:scale(.99)}
+  .deck .nm{font-weight:600;font-size:15.5px}
+  .deck .ct{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .deck .bar{height:4px;border-radius:4px;background:var(--line);margin-top:7px;overflow:hidden}
+  .deck .bar i{display:block;height:100%;background:var(--jade);border-radius:4px}
+  .deck .go{margin-left:auto;color:var(--muted);font-size:20px}
+  .deck .body{flex:1;min-width:0}
+  .foot{color:var(--muted);font-size:12.5px;text-align:center;margin:28px 0 24px;line-height:1.6}
+  .foot button{background:none;border:0;color:var(--muted);text-decoration:underline;padding:0;font-size:12.5px}
+
+  /* ---- study ---- */
+  .top{display:flex;align-items:center;gap:10px;padding:12px 0 10px}
+  .back{background:var(--card);border:1px solid var(--line);border-radius:11px;width:40px;height:40px;font-size:20px;line-height:1;display:grid;place-items:center}
+  .top .ttl{font-weight:600;font-size:15.5px;line-height:1.2;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .top .ttl small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+  .top .pos{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .opts{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+  .opt{font-size:13px;font-weight:600;background:var(--card);color:var(--ink-soft);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+  .opt.on{background:var(--jade-soft);border-color:var(--jade);color:var(--jade)}
+  .fc{height:min(52vh,360px);perspective:1200px;margin-bottom:14px;user-select:none;-webkit-user-select:none}
+  .fc-in{position:relative;width:100%;height:100%;transition:transform .45s cubic-bezier(.3,.8,.3,1);transform-style:preserve-3d}
+  .fc.flip .fc-in{transform:rotateY(180deg)}
+  .fc.noanim .fc-in{transition:none}
+  .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;border:1px solid var(--line);
+    background:var(--card);box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center}
+  .back-f{transform:rotateY(180deg);background:var(--jade-soft)}
+  .big-h{font-family:var(--han);font-size:clamp(34px,13vw,64px);line-height:1.15;word-break:break-word}
+  .big-h.long{font-size:clamp(26px,8.5vw,40px)}
+  .big-e{font-size:21px;font-weight:500;line-height:1.35}
+  .py{font-family:var(--mono);font-size:18px;color:var(--jade)}
+  .en{font-size:16px;color:var(--ink-soft);line-height:1.45;max-width:32ch}
+  .h-sm{font-family:var(--han);font-size:30px}
+  .hint{position:absolute;bottom:14px;font-size:12px;color:var(--muted)}
+  .known-tag{position:absolute;top:14px;right:14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--jade);
+    background:var(--jade-soft);border-radius:6px;padding:2px 7px}
+  .act{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .abtn{border-radius:14px;padding:15px 10px;font-weight:600;font-size:16px;border:1px solid var(--line);background:var(--card)}
+  .abtn.learn{color:var(--seal);border-color:var(--seal);background:var(--seal-soft)}
+  .abtn.know{color:#fff;background:var(--jade);border-color:var(--jade)}
+  .sub-act{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+  .lnk{background:none;border:0;color:var(--muted);font-size:14px;padding:8px 4px}
+  .say{background:var(--card);border:1px solid var(--line);border-radius:11px;width:44px;height:44px;color:var(--seal);display:grid;place-items:center}
+  .say svg{width:18px;height:18px}
+
+  /* ---- done ---- */
+  .done{text-align:center;padding:48px 16px}
+  .done .big{font-family:var(--han);font-size:54px;color:var(--jade)}
+  .done h2{margin:8px 0 6px;font-size:22px}
+  .done p{color:var(--ink-soft);margin:0 0 22px}
+  .done .abtn{width:100%;margin-bottom:10px}
+  @media (prefers-reduced-motion:reduce){.fc-in{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HOME -->
+  <main id="home">
+    <header class="mast">
+      <div class="eyebrow">街头中文 · Street Mandarin</div>
+      <h1><span class="cn">抽认卡</span> Flashcards</h1>
+      <p class="sub" id="homeSub"></p>
+    </header>
+    <button class="mixall" id="mixAll">Study everything I'm still learning</button>
+    <div id="weeks"></div>
+    <p class="foot">Works offline once opened. Progress is saved on this device.<br>
+      <button id="resetBtn">Reset progress</button></p>
+  </main>
+
+  <!-- STUDY -->
+  <main id="study" hidden>
+    <div class="top">
+      <button class="back" id="backBtn" aria-label="Back to decks">‹</button>
+      <div class="ttl" id="sTitle"></div>
+      <div class="pos" id="sPos"></div>
+    </div>
+    <div class="opts">
+      <button class="opt" id="optDir"></button>
+      <button class="opt" id="optShuf">Shuffle</button>
+      <button class="opt" id="optKnown"></button>
+    </div>
+    <div class="fc" id="card">
+      <div class="fc-in">
+        <div class="face front-f" id="front"></div>
+        <div class="face back-f" id="backF"></div>
+      </div>
+    </div>
+    <div class="act">
+      <button class="abtn learn" id="learnBtn">Still learning</button>
+      <button class="abtn know" id="knowBtn">✓ Know it</button>
+    </div>
+    <div class="sub-act">
+      <button class="lnk" id="prevBtn">‹ Previous</button>
+      <button class="say" id="sayBtn" aria-label="Say it"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 00-2.5-4v8a4.5 4.5 0 002.5-4z"/></svg></button>
+      <button class="lnk" id="skipBtn">Skip ›</button>
+    </div>
+  </main>
+
+  <!-- DONE -->
+  <main id="done" hidden>
+    <div class="done">
+      <div class="big">好！</div>
+      <h2 id="dTitle"></h2>
+      <p id="dSub"></p>
+      <button class="abtn know" id="againBtn">Go again with the ones I missed</button>
+      <button class="abtn" id="homeBtn">Back to decks</button>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var DATA = {"weeks":[{"n":1,"badge":"第一周","title":"Getting around"},{"n":2,"badge":"第二周","title":"Eating"},{"n":3,"badge":"第三周","title":"Bargaining & when things go wrong"},{"n":4,"badge":"第四周","title":"Talking with people"}],"decks":[{"id":"w1v","week":1,"name":"Key vocabulary","cards":[{"h":"师傅","p":"shīfu","e":"n · how you address any driver or tradesman — never 司机"},{"h":"麻烦您了","p":"máfan nín le","e":"phr · \"sorry to trouble you\" — softens any request"},{"h":"系好安全带","p":"jì hǎo ānquándài","e":"phr · buckle up (系 jì = to fasten)"},{"h":"堵","p":"dǔ","e":"adj · jammed, congested (堵车 = a traffic jam)"},{"h":"赶时间","p":"gǎn shíjiān","e":"phr · to be in a hurry, racing the clock"},{"h":"估计","p":"gūjì","e":"v · I reckon / I'd estimate"},{"h":"绕远","p":"rào yuǎn","e":"v · to go the long way round"},{"h":"没事","p":"méishì","e":"phr · no problem, doesn't matter"},{"h":"导航","p":"dǎoháng","e":"n · GPS navigation"},{"h":"坐稳","p":"zuò wěn","e":"v · sit tight, hold on"},{"h":"扫码","p":"sǎomǎ","e":"v · to scan the QR code"},{"h":"支付宝","p":"Zhīfùbǎo","e":"n · Alipay (微信 = WeChat, the other one)"},{"h":"微信","p":"Wēixìn","e":"n · WeChat (messaging + payments + everything)"},{"h":"发票","p":"fāpiào","e":"n · official printed receipt (carries the cab number)"},{"h":"号线","p":"hào xiàn","e":"n · line number (八号线 = Line 8)"},{"h":"往","p":"wǎng","e":"prep · toward, heading — 往南 southbound"},{"h":"换乘","p":"huànchéng","e":"v · to transfer between lines"},{"h":"直达","p":"zhídá","e":"v · direct, no change"},{"h":"出站","p":"chū zhàn","e":"v · to exit the station"},{"h":"刷","p":"shuā","e":"v · to tap or scan (a card, a phone)"},{"h":"二维码","p":"èrwéimǎ","e":"n · QR code"},{"h":"明白","p":"míngbai","e":"v · to understand, to get it"},{"h":"拐","p":"guǎi","e":"v · to turn (a corner) — 往东拐 turn east"},{"h":"路口","p":"lùkǒu","e":"n · intersection, junction"},{"h":"不好意思","p":"bù hǎoyìsi","e":"phr · excuse me / sorry to bother — NOT 对不起"},{"h":"顺着","p":"shùnzhe","e":"prep · along, following (顺着这条路 = along this road)"},{"h":"胡同","p":"hútòng","e":"n · Beijing alley (Shanghai: 弄堂 lòngtáng)"},{"h":"一直","p":"yìzhí","e":"adv · straight on, continuously"},{"h":"牌楼","p":"páilóu","e":"n · an ornamental gateway arch (a landmark)"},{"h":"帮大忙","p":"bāng dà máng","e":"phr · to be a big help"},{"h":"预订","p":"yùdìng","e":"v · to reserve, to book"},{"h":"大床房","p":"dàchuángfáng","e":"n · king room (双床房 = twin)"},{"h":"护照","p":"hùzhào","e":"n · passport"},{"h":"稍等","p":"shāo děng","e":"phr · one moment, hold on"},{"h":"押金","p":"yājīn","e":"n · deposit"},{"h":"退房","p":"tuìfáng","e":"v · to check out"},{"h":"房卡","p":"fángkǎ","e":"n · key card"},{"h":"暖气","p":"nuǎnqì","e":"n · central heating"},{"h":"好像","p":"hǎoxiàng","e":"adv · it seems, it's as if — the polite-complaint word"},{"h":"要不","p":"yàobù","e":"conj · how about…? / or else — a soft suggestion"},{"h":"马上","p":"mǎshàng","e":"adv · right away"},{"h":"充电宝","p":"chōngdiànbǎo","e":"n · power bank (rent one anywhere, scan to release)"},{"h":"搞定","p":"gǎodìng","e":"v · sorted, done, handled (casual)"},{"h":"对了","p":"duìle","e":"phr · \"oh, by the way\" — changes topic"},{"h":"怎么卖","p":"zěnme mài","e":"phr · \"how's it sold?\" — the natural price question (Week 3 doorway)"},{"h":"常温","p":"chángwēn","e":"n · room temperature (of drinks — a real preference, not a mistake)"},{"h":"二等座","p":"èrděngzuò","e":"n · second class — the normal high-speed-rail seat"},{"h":"检票口","p":"jiǎnpiàokǒu","e":"n · the ticket gate (at a train station)"},{"h":"左右","p":"zuǒyòu","e":"adv · give or take, approximately (goes after the number)"},{"h":"多久","p":"duō jiǔ","e":"phr · how long"},{"h":"现金","p":"xiànjīn","e":"n · cash"},{"h":"一共","p":"yígòng","e":"adv · altogether, in total"},{"h":"免费","p":"miǎnfèi","e":"adj · free of charge"},{"h":"换","p":"huàn","e":"v · to change, to swap"},{"h":"有预订","p":"yǒu yùdìng","e":"phr · to have a reservation (我有预订，姓…)"},{"h":"哪一层","p":"nǎ yì céng","e":"phr · which floor"},{"h":"楼层","p":"lóucéng","e":"n · floor, storey"},{"h":"房号","p":"fánghào","e":"n · room number"},{"h":"如果有的话","p":"rúguǒ yǒu de huà","e":"phr · if there is one / if so"},{"h":"安排","p":"ānpái","e":"v · to arrange, sort out"},{"h":"比较","p":"bǐjiào","e":"adv · relatively, more (哪条路比较好)"},{"h":"您觉得","p":"nín juéde","e":"phr · what do you think? / in your view"}]},{"id":"w2v","week":2,"name":"Key vocabulary","cards":[{"h":"服务员","p":"fúwùyuán","e":"n · server, waiter — call it out to flag them"},{"h":"点菜","p":"diǎn cài","e":"v · to order dishes"},{"h":"招牌菜","p":"zhāopái cài","e":"n · signature dish, house specialty"},{"h":"烤鸭","p":"kǎoyā","e":"n · roast duck (Beijing's signature)"},{"h":"炸酱面","p":"zhájiàngmiàn","e":"n · zhajiang noodles (a Beijing classic)"},{"h":"来","p":"lái","e":"v · \"bring me / I'll have\" when ordering"},{"h":"汤","p":"tāng","e":"n · soup"},{"h":"不要放","p":"búyào fàng","e":"phr · don't add (an ingredient)"},{"h":"香菜","p":"xiāngcài","e":"n · cilantro, coriander"},{"h":"没问题","p":"méi wèntí","e":"phr · no problem"},{"h":"微辣","p":"wēi là","e":"adj · mildly spicy (微/中/特辣 = mild/medium/extra)"},{"h":"别太辣","p":"bié tài là","e":"phr · not too spicy"},{"h":"买单","p":"mǎidān","e":"v · to pay the bill (also 结账)"},{"h":"几位","p":"jǐ wèi","e":"phr · how many people? (party size)"},{"h":"菜单","p":"càidān","e":"n · menu"},{"h":"看不懂","p":"kàn bu dǒng","e":"phr · can't read / can't make sense of it"},{"h":"帮我","p":"bāng wǒ","e":"phr · help me… / could you … for me"},{"h":"推荐","p":"tuījiàn","e":"v · to recommend"},{"h":"宫保鸡丁","p":"gōngbǎo jīdīng","e":"n · kung pao chicken (palace-style diced chicken)"},{"h":"有没有","p":"yǒu méiyǒu","e":"phr · is there / are there…?"},{"h":"花生","p":"huāshēng","e":"n · peanut"},{"h":"酱油","p":"jiàngyóu","e":"n · soy sauce — a little's ok; ask 少放点 if a dish looks heavy on it"},{"h":"不舒服","p":"bù shūfu","e":"phr · unwell; doesn't sit right"},{"h":"红烧","p":"hóngshāo","e":"n · red-braised (in soy sauce) — a cooking method"},{"h":"分量","p":"fènliàng","e":"n · portion size"},{"h":"够","p":"gòu","e":"adj · enough"},{"h":"一份","p":"yí fèn","e":"n · one portion / order"},{"h":"老板","p":"lǎobǎn","e":"n · boss — how you address a shop/stall owner"},{"h":"肉夹馍","p":"ròujiāmó","e":"n · roujiamo, \"Chinese burger\" (Xi'an)"},{"h":"怎么卖","p":"zěnme mài","e":"phr · how's it sold? / how much?"},{"h":"凉皮","p":"liángpí","e":"n · liangpi, cold skin noodles (Xi'an)"},{"h":"少放","p":"shǎo fàng","e":"phr · go easy on / add less of (少放辣)"},{"h":"带走","p":"dài zǒu","e":"v · to take away, to go (also 打包)"},{"h":"打包","p":"dǎbāo","e":"v · to box up leftovers / get it to go"},{"h":"奶茶","p":"nǎichá","e":"n · milk tea, bubble tea"},{"h":"少糖","p":"shǎo táng","e":"phr · less sugar (半糖 = half, 无糖 = none)"},{"h":"去冰","p":"qù bīng","e":"phr · no ice (少冰 = less ice)"},{"h":"小笼包","p":"xiǎolóngbāo","e":"n · soup dumplings (Shanghai)"},{"h":"羊肉串","p":"yángròu chuàn","e":"n · lamb skewers (Xi'an Muslim Quarter)"},{"h":"结账","p":"jiézhàng","e":"v · to settle the bill (= 买单)"},{"h":"有名","p":"yǒumíng","e":"adj · famous, well-known"},{"h":"米饭","p":"mǐfàn","e":"n · cooked rice"},{"h":"鸡肉","p":"jīròu","e":"n · chicken (meat)"},{"h":"牛肉","p":"niúròu","e":"n · beef"},{"h":"甜","p":"tián","e":"adj · sweet"},{"h":"咸","p":"xián","e":"adj · salty, savory"},{"h":"辣","p":"là","e":"adj · spicy, hot"},{"h":"酱油","p":"jiàngyóu","e":"n · soy sauce (Shanghai food 浓油赤酱 uses a lot)"},{"h":"清淡","p":"qīngdàn","e":"adj · light, mild, not oily"},{"h":"清蒸","p":"qīngzhēng","e":"n · steamed (a light, low-soy method)"},{"h":"油腻","p":"yóunì","e":"adj · greasy, oily"},{"h":"甜品","p":"tiánpǐn","e":"n · dessert"},{"h":"银耳羹","p":"yín'ěrgēng","e":"n · white-fungus sweet soup (light dessert)"},{"h":"红豆沙","p":"hóngdòushā","e":"n · sweet red bean soup"},{"h":"凉菜","p":"liángcài","e":"n · cold dish, appetizer"},{"h":"道","p":"dào","e":"m · measure word for a dish / course"},{"h":"少放点糖","p":"shǎo fàng diǎn táng","e":"phr · a little less sugar, please"},{"h":"靠窗","p":"kào chuāng","e":"phr · by the window (靠 = next to)"},{"h":"位子","p":"wèizi","e":"n · seat, spot"},{"h":"配","p":"pèi","e":"v · to pair with, go well with (哪种配这顿饭)"},{"h":"普洱","p":"pǔ'ěr","e":"n · pu'er — dark fermented tea; cuts grease, caffeinated"},{"h":"龙井","p":"lóngjǐng","e":"n · Longjing — a famous green tea; light, caffeinated"},{"h":"菊花茶","p":"júhuā chá","e":"n · chrysanthemum tea — herbal, caffeine-free, cooling"},{"h":"解腻","p":"jiěnì","e":"v · to cut the grease, offset richness"},{"h":"不含咖啡因","p":"bù hán kāfēiyīn","e":"phr · caffeine-free (含 = to contain)"},{"h":"一壶","p":"yì hú","e":"phr · a pot of (壶 = teapot)"},{"h":"会不会太多","p":"huì bu huì tài duō","e":"phr · might it be too much? — checking before ordering"},{"h":"半份","p":"bàn fèn","e":"phr · a half portion (份 = a serving)"},{"h":"清蒸鱼","p":"qīngzhēng yú","e":"n · steamed fish — light and low-soy"},{"h":"时令","p":"shílìng","e":"n · in season, seasonal (时令菜 = seasonal dish)"},{"h":"时蔬","p":"shíshū","e":"n · seasonal vegetables"},{"h":"青菜","p":"qīngcài","e":"n · leafy greens, veg"},{"h":"油麦菜","p":"yóumàicài","e":"n · Indian/stem lettuce — a common leafy green"},{"h":"清炒","p":"qīngchǎo","e":"v · to stir-fry plainly — light, little sauce/oil"},{"h":"新鲜","p":"xīnxiān","e":"adj · fresh"}]},{"id":"w2mc","week":2,"name":"Menu characters","cards":[{"h":"炒","p":"chǎo","e":"stir-fried — e.g. 蛋炒饭"},{"h":"烧","p":"shāo","e":"braised in sauce — e.g. 红烧肉"},{"h":"烤","p":"kǎo","e":"roasted, grilled — e.g. 烤鸭"},{"h":"蒸","p":"zhēng","e":"steamed — e.g. 清蒸鱼"},{"h":"炖","p":"dùn","e":"stewed (slow) — e.g. 炖牛肉"},{"h":"煎","p":"jiān","e":"pan-fried — e.g. 生煎"},{"h":"炸","p":"zhá","e":"deep-fried — e.g. 炸鸡"},{"h":"煮","p":"zhǔ","e":"boiled — e.g. 煮饺子"},{"h":"卤","p":"lǔ","e":"simmered in spiced stock — e.g. 卤蛋"},{"h":"爆","p":"bào","e":"flash-fried, high heat — e.g. 爆炒"},{"h":"丝","p":"sī","e":"shredded — e.g. 鱼香肉丝"},{"h":"丁","p":"dīng","e":"diced, cubed — e.g. 宫保鸡丁"},{"h":"片","p":"piàn","e":"sliced — e.g. 肉片"},{"h":"块","p":"kuài","e":"in chunks — e.g. 鸡块"},{"h":"末","p":"mò","e":"minced — e.g. 肉末"},{"h":"猪","p":"zhū","e":"pork"},{"h":"牛","p":"niú","e":"beef"},{"h":"羊","p":"yáng","e":"lamb, mutton"},{"h":"鸡","p":"jī","e":"chicken"},{"h":"鸭","p":"yā","e":"duck"},{"h":"鱼","p":"yú","e":"fish"},{"h":"虾","p":"xiā","e":"shrimp"},{"h":"蛋","p":"dàn","e":"egg — e.g. 西红柿炒鸡蛋"},{"h":"豆腐","p":"dòufu","e":"tofu — e.g. 麻婆豆腐"},{"h":"素","p":"sù","e":"vegetarian"},{"h":"面","p":"miàn","e":"noodles"},{"h":"饭","p":"fàn","e":"rice — e.g. 蛋炒饭"},{"h":"汤","p":"tāng","e":"soup"},{"h":"麻","p":"má","e":"numbing (Sichuan pepper) — e.g. 麻辣"},{"h":"辣","p":"là","e":"spicy"},{"h":"酸","p":"suān","e":"sour"},{"h":"甜","p":"tián","e":"sweet"},{"h":"咸","p":"xián","e":"salty, savory"},{"h":"香","p":"xiāng","e":"fragrant, savory — e.g. 鱼香"},{"h":"红","p":"hóng","e":"red — e.g. 红烧"},{"h":"白","p":"bái","e":"white, plain — e.g. 白灼"},{"h":"清","p":"qīng","e":"clear, light — e.g. 清蒸"},{"h":"干","p":"gān","e":"dry — e.g. 干煸"},{"h":"家常","p":"jiācháng","e":"home-style — e.g. 家常豆腐"}]},{"id":"w2md","week":2,"name":"Menu dishes","cards":[{"h":"北京烤鸭","p":"Běijīng kǎoyā","e":"Beijing roast duck (烤 roast + 鸭 duck)"},{"h":"炸酱面","p":"zhájiàngmiàn","e":"noodles in fried soybean sauce (Beijing staple)"},{"h":"涮羊肉","p":"shuàn yángròu","e":"lamb hotpot, Beijing-style (涮 swish + 羊肉 lamb)"},{"h":"肉夹馍","p":"ròujiāmó","e":"braised meat in a bun (Xi'an \"Chinese burger\")"},{"h":"凉皮","p":"liángpí","e":"cold skin noodles (凉 cold — Xi'an)"},{"h":"羊肉泡馍","p":"yángròu pàomó","e":"flatbread in mutton soup (Xi'an specialty)"},{"h":"羊肉串","p":"yángròu chuàn","e":"cumin lamb skewers (串 skewer)"},{"h":"小笼包","p":"xiǎolóngbāo","e":"soup dumplings (Shanghai — careful, hot inside)"},{"h":"生煎","p":"shēngjiān","e":"pan-fried pork buns (煎 pan-fry — Shanghai)"},{"h":"红烧肉","p":"hóngshāo ròu","e":"red-braised pork belly (红烧 braised, sweet (本帮))"},{"h":"宫保鸡丁","p":"gōngbǎo jīdīng","e":"kung pao chicken (鸡 chicken + 丁 diced · ⚠ peanuts)"},{"h":"麻婆豆腐","p":"mápó dòufu","e":"mapo tofu (麻 numbing + 辣 spicy)"},{"h":"鱼香肉丝","p":"yúxiāng ròusī","e":"\"fish-fragrant\" pork (肉 pork + 丝 shreds · no fish!)"},{"h":"西红柿炒鸡蛋","p":"xīhóngshì chǎo jīdàn","e":"tomato & scrambled egg (炒 stir-fry · mild, safe)"},{"h":"青椒肉丝","p":"qīngjiāo ròusī","e":"pork with green pepper (丝 shreds)"},{"h":"蛋炒饭","p":"dàn chǎofàn","e":"egg fried rice (炒 stir-fry + 饭 rice)"},{"h":"火锅","p":"huǒguō","e":"hotpot — cook it yourself (pick a broth, order raw plates)"},{"h":"饺子","p":"jiǎozi","e":"dumplings (boiled) (order by 两 (liǎng) portions)"},{"h":"银耳羹","p":"yín'ěrgēng","e":"white-fungus sweet soup (light, ask 少放点糖)"},{"h":"红豆沙","p":"hóngdòushā","e":"sweet red bean soup (warm, light — nationwide)"},{"h":"冰糖葫芦","p":"bīngtáng húlu","e":"candied hawthorn on a stick (Beijing street classic, tart-sweet)"},{"h":"豌豆黄","p":"wāndòuhuáng","e":"sweet mung-pea cake (Beijing — light, not too sweet)"},{"h":"驴打滚","p":"lǘdǎgǔn","e":"glutinous rice rolls in soybean flour (Beijing specialty)"},{"h":"甑糕","p":"zènggāo","e":"steamed rice cake with dates (Xi'an — steamed, not fried)"},{"h":"青团","p":"qīngtuán","e":"sweet mugwort rice balls (Shanghai/Jiangnan, springtime)"},{"h":"清炒油麦菜","p":"qīngchǎo yóumàicài","e":"stir-fried Indian lettuce (清炒 = light, little oil/soy)"},{"h":"蒜蓉西兰花","p":"suànróng xīlánhuā","e":"garlic broccoli (蒜蓉 = minced garlic)"},{"h":"拍黄瓜","p":"pāi huángguā","e":"smashed cucumber salad (凉菜, cold & refreshing)"},{"h":"地三鲜","p":"dìsānxiān","e":"potato, eggplant & pepper (hearty — can be oily)"},{"h":"清炒时蔬","p":"qīngchǎo shíshū","e":"stir-fried seasonal greens (时蔬 = whatever's in season)"},{"h":"双皮奶","p":"shuāngpínǎi","e":"steamed milk custard (light, Cantonese; ask 少糖)"},{"h":"芝麻汤圆","p":"zhīma tāngyuán","e":"sesame glutinous rice balls (warm, in soup)"},{"h":"桂花糕","p":"guìhuā gāo","e":"osmanthus cake (floral, lightly sweet)"},{"h":"普洱","p":"pǔ'ěr","e":"pu'er tea (dark, 解腻 (cuts grease) · caffeinated)"},{"h":"龙井 / 绿茶","p":"lóngjǐng / lǜchá","e":"Longjing / green tea (light & fresh · caffeinated)"},{"h":"菊花茶","p":"júhuā chá","e":"chrysanthemum tea (herbal · caffeine-free · cooling)"},{"h":"茉莉花茶","p":"mòlìhuā chá","e":"jasmine tea (fragrant, mild · caffeinated)"},{"h":"乌龙茶","p":"wūlóng chá","e":"oolong tea (between green & dark · caffeinated)"},{"h":"大麦茶","p":"dàmài chá","e":"roasted barley tea (nutty · caffeine-free · free refills)"},{"h":"酸梅汤","p":"suānméitāng","e":"sour-plum drink (tangy, chilled; ask 少冰)"},{"h":"豆浆","p":"dòujiāng","e":"soy milk (hot, a breakfast staple)"}]},{"id":"w2ml","week":2,"name":"Menu labels & measure words","cards":[{"h":"招牌菜","p":"zhāopái cài","e":"house specialty — the safe order"},{"h":"今日特价","p":"jīnrì tèjià","e":"today's special / on sale"},{"h":"时令菜","p":"shílìng cài","e":"seasonal dish"},{"h":"例汤","p":"lì tāng","e":"soup of the day"},{"h":"套餐","p":"tàocān","e":"set meal / combo"},{"h":"时价","p":"shíjià","e":"market price ⚠ ask first — usually seafood"},{"h":"大份 / 小份","p":"dà fèn / xiǎo fèn","e":"large / small portion (半份 = half)"},{"h":"微辣 / 中辣 / 特辣","p":"wēi / zhōng / tè là","e":"mild / medium / extra spicy"},{"h":"免费","p":"miǎnfèi","e":"free (e.g. 米饭免费 = free rice)"},{"h":"卖完了 / 售罄","p":"mài wán le / shòuqìng","e":"sold out"},{"h":"份 / 半份","p":"fèn / bàn fèn","e":"a serving / a half portion"},{"h":"例","p":"lì","e":"a set serving (例汤 = soup of the day)"},{"h":"位","p":"wèi","e":"per person (按位 = priced per head)"},{"h":"碗","p":"wǎn","e":"a bowl (rice, soup, noodles)"},{"h":"盘 / 碟","p":"pán / dié","e":"a plate / a small dish"},{"h":"杯","p":"bēi","e":"a cup / glass (of a drink)"},{"h":"壶","p":"hú","e":"a pot (of tea)"},{"h":"瓶","p":"píng","e":"a bottle"},{"h":"只","p":"zhī","e":"a whole bird/animal (一只烤鸭)"},{"h":"条","p":"tiáo","e":"for fish (一条鱼)"},{"h":"串","p":"chuàn","e":"a skewer (一串羊肉)"},{"h":"两","p":"liǎng","e":"50 g — order dumplings by 两"},{"h":"斤","p":"jīn","e":"500 g — by weight (seafood, fruit)"},{"h":"个","p":"gè","e":"the all-purpose counter"}]},{"id":"w3v","week":3,"name":"Key vocabulary","cards":[{"h":"怎么卖","p":"zěnme mài","e":"phr · how much? (how's it sold?) — the opener"},{"h":"太贵了","p":"tài guì le","e":"phr · too expensive"},{"h":"便宜点","p":"piányi diǎn","e":"phr · make it cheaper"},{"h":"实价","p":"shíjià","e":"n · the real / honest price"},{"h":"算了","p":"suàn le","e":"phr · forget it, never mind (the walk-away)"},{"h":"再看看","p":"zài kànkan","e":"phr · I'll look around some more"},{"h":"拿走","p":"ná zǒu","e":"v · take it (away)"},{"h":"就这么定了","p":"jiù zhème dìng le","e":"phr · it's a deal, settled"},{"h":"一口价","p":"yìkǒujià","e":"n · \"one price, no haggling\" (often an opening bluff)"},{"h":"砍价","p":"kǎnjià","e":"v · to haggle, bargain (also 讲价)"},{"h":"低","p":"dī","e":"adj · low"},{"h":"不舒服","p":"bù shūfu","e":"adj · unwell, not feeling right"},{"h":"哪里不舒服","p":"nǎli bù shūfu","e":"phr · what's wrong? / where does it hurt?"},{"h":"拉肚子","p":"lā dùzi","e":"v · to have diarrhea"},{"h":"发烧","p":"fāshāo","e":"v · to have a fever"},{"h":"肚子疼","p":"dùzi téng","e":"phr · stomachache"},{"h":"头疼","p":"tóu téng","e":"phr · headache"},{"h":"感冒","p":"gǎnmào","e":"n/v · a cold; to catch a cold"},{"h":"药","p":"yào","e":"n · medicine"},{"h":"药店","p":"yàodiàn","e":"n · pharmacy"},{"h":"一天三次","p":"yì tiān sān cì","e":"phr · three times a day"},{"h":"一次","p":"yí cì","e":"phr · one time / per dose"},{"h":"粒","p":"lì","e":"m · measure word for pills/small round things"},{"h":"饭后","p":"fàn hòu","e":"n · after meals (饭前 = before)"},{"h":"吃坏了","p":"chī huài le","e":"phr · ate something bad, upset stomach from food"},{"h":"打不开","p":"dǎ bu kāi","e":"phr · can't get it open / won't open"},{"h":"消磁","p":"xiāocí","e":"v · to demagnetize (a key card)"},{"h":"把","p":"bǎ","e":"part · (fronts the object — what you did to it)"},{"h":"落","p":"là","e":"v · to leave (sth) behind (落在车上)"},{"h":"出租车","p":"chūzūchē","e":"n · taxi (also 打车 for hailing)"},{"h":"别着急","p":"bié zháojí","e":"phr · don't worry, don't panic"},{"h":"联系","p":"liánxì","e":"v · to contact, get in touch"},{"h":"打电话","p":"dǎ diànhuà","e":"v · to make a phone call"},{"h":"找到","p":"zhǎodào","e":"v · to find (successfully)"},{"h":"丢","p":"diū","e":"v · to lose (把钱包丢了)"},{"h":"钱包","p":"qiánbāo","e":"n · wallet"},{"h":"报警","p":"bàojǐng","e":"v · to call the police (110)"},{"h":"太感谢了","p":"tài gǎnxiè le","e":"phr · thank you so much"},{"h":"多少钱","p":"duōshao qián","e":"phr · how much (money)?"},{"h":"便宜","p":"piányi","e":"adj · cheap, inexpensive"},{"h":"热水","p":"rèshuǐ","e":"n · hot water"},{"h":"疼","p":"téng","e":"adj · to hurt, ache"},{"h":"司机","p":"sījī","e":"n · driver"},{"h":"串","p":"chuàn","e":"mw · measure word for strings/bunches (一串珍珠)"},{"h":"珍珠","p":"zhēnzhū","e":"n · pearl(s)"},{"h":"品质","p":"pǐnzhì","e":"n · quality"},{"h":"别家","p":"biéjiā","e":"n · other shops/stalls (comparison leverage)"},{"h":"光泽","p":"guāngzé","e":"n · luster, sheen"},{"h":"随便看看","p":"suíbiàn kànkan","e":"phr · just looking, browsing — lowers the pressure"},{"h":"卖不卖","p":"mài bu mài","e":"phr · will you sell it? — the A不A offer"},{"h":"进货","p":"jìnhuò","e":"v · to stock up, buy wholesale (进货价 = cost price)"},{"h":"送人","p":"sòng rén","e":"phr · to give as a gift"},{"h":"实在","p":"shízai","e":"adj · honest, genuine (给个实在价 = an honest price)"},{"h":"合适","p":"héshì","e":"adj · suitable, just right"},{"h":"诚意","p":"chéngyì","e":"n · sincerity, serious intent (有诚意 = a serious buyer)"},{"h":"整","p":"zhěng","e":"adj · whole, even (五百整 = an even 500)"},{"h":"挑","p":"tiāo","e":"v · to pick, to choose (自己挑 = pick it yourself)"},{"h":"眼光","p":"yǎnguāng","e":"n · taste, an eye (for quality)"},{"h":"粉","p":"fěn","e":"adj · pink"},{"h":"正品","p":"zhèngpǐn","e":"n · the genuine article (vs a knock-off / 假货)"},{"h":"打折","p":"dǎ zhé","e":"v · to be on sale / to discount (X折 = pay X×10%)"},{"h":"优惠","p":"yōuhuì","e":"n · a discount, a deal, a perk"},{"h":"活动","p":"huódòng","e":"n · a promotion, a sale event (参加活动 = in the promo)"},{"h":"满减","p":"mǎn jiǎn","e":"n · spend-and-save (满100减30)"},{"h":"买一送一","p":"mǎi yī sòng yī","e":"phr · buy one get one free"},{"h":"清仓","p":"qīngcāng","e":"v · clearance sale"},{"h":"包邮","p":"bāoyóu","e":"n · free shipping"},{"h":"赠送","p":"zèngsòng","e":"v · to give free (with a purchase); 赠 = a gift"},{"h":"全场","p":"quánchǎng","e":"n · the whole store / everything (全场9折)"}]},{"id":"w3s","week":3,"name":"Deals & signs","cards":[{"h":"打折","p":"dǎ zhé","e":"on sale / to discount (X折 = you PAY X×10%)"},{"h":"全场9折","p":"quánchǎng jiǔ zhé","e":"10% off everything (pay 90%) (signs often use digits: 9折 = 九折)"},{"h":"全场8折","p":"quánchǎng bā zhé","e":"20% off everything (pay 80%) (the lower the number, the bigger the cut)"},{"h":"第二件半价","p":"dì-èr jiàn bànjià","e":"2nd item half price (≈25% off for two)"},{"h":"满100减30","p":"mǎn yìbǎi jiǎn sānshí","e":"spend 100, take 30 off (满减 = spend-and-save)"},{"h":"买一送一","p":"mǎi yī sòng yī","e":"buy one, get one free (best value — 50% off two)"},{"h":"买二送一","p":"mǎi èr sòng yī","e":"buy two, get one free (≈33% off three)"},{"h":"更有好礼赠送","p":"gèng yǒu hǎolǐ zèngsòng","e":"plus a free gift (gift-with-purchase (赠 = given free))"},{"h":"加10元多一件","p":"jiā shí yuán duō yī jiàn","e":"+10 yuan for one more (add-on deal)"},{"h":"清仓","p":"qīngcāng","e":"clearance — everything must go (often final sale, no returns)"},{"h":"一口价","p":"yìkǒu jià","e":"fixed price — no haggling (don't bother bargaining)"},{"h":"实价","p":"shíjià","e":"the honest price — as marked (shí = real; no bargaining)"},{"h":"时价","p":"shíjià","e":"market price — ask first (same sound as 实价! usually seafood)"},{"h":"特价 / 特惠","p":"tèjià / tèhuì","e":"special low price (a genuine markdown)"},{"h":"会员价","p":"huìyuán jià","e":"members' price (the non-member pays more)"},{"h":"不讲价","p":"bù jiǎngjià","e":"no bargaining (same as 一口价)"},{"h":"即日起","p":"jírì qǐ","e":"effective from today (the sale start)"},{"h":"至10月15日","p":"zhì shíyuè shíwǔ rì","e":"until Oct 15 (至…日 = the end date)"},{"h":"即买即得","p":"jí mǎi jí dé","e":"get it right away with purchase (no voucher/waiting)"},{"h":"送完为止","p":"sòng wán wéizhǐ","e":"while supplies last (until the gifts run out)"},{"h":"买任意一件即赠","p":"mǎi rènyì yí jiàn jí zèng","e":"buy any item, get a free gift (任意 = any)"},{"h":"九折 (9折)","p":"jiǔ zhé","e":"10% off · pay 90%"},{"h":"八折 (8折)","p":"bā zhé","e":"20% off · pay 80%"},{"h":"七五折 (7.5折)","p":"qī wǔ zhé","e":"25% off · pay 75%"},{"h":"六折 (6折)","p":"liù zhé","e":"40% off · pay 60%"},{"h":"五折 (5折)","p":"wǔ zhé","e":"half price · pay 50%"},{"h":"第二件半价","p":"dì-èr jiàn bànjià","e":"≈25% off (two items)"},{"h":"买二送一","p":"mǎi èr sòng yī","e":"≈33% off (three items)"},{"h":"满100减30","p":"mǎn 100 jiǎn 30","e":"30 off per 100 spent"},{"h":"哪些是打折的？","p":"nǎxiē shì dǎ zhé de","e":"which ones are on sale?"},{"h":"这个参加活动吗？","p":"zhège cānjiā huódòng ma","e":"is this one in the promotion?"},{"h":"有没有优惠？","p":"yǒu méiyǒu yōuhuì","e":"any discount?"},{"h":"这个多少折？","p":"zhège duōshao zhé","e":"what's the discount on this?"},{"h":"能再优惠点吗？","p":"néng zài yōuhuì diǎn ma","e":"can you take a bit more off?"},{"h":"满多少包邮？","p":"mǎn duōshao bāoyóu","e":"how much to get free shipping?"}]},{"id":"w4v","week":4,"name":"Key vocabulary","cards":[{"h":"欢迎欢迎","p":"huānyíng huānyíng","e":"phr · welcome! (doubled = warmer, said on greeting)"},{"h":"一路辛苦","p":"yílù xīnkǔ","e":"phr · \"you've had a tiring journey\" — said to an arriving guest"},{"h":"顺利","p":"shùnlì","e":"adj · smooth, without a hitch (路上顺利吗 = did the trip go ok)"},{"h":"接","p":"jiē","e":"v · to pick (sb) up, to meet (sb arriving)"},{"h":"应该的","p":"yīnggāi de","e":"phr · \"it's the least I could do\" — brushing off thanks"},{"h":"兴奋","p":"xīngfèn","e":"adj · excited, thrilled"},{"h":"一个人","p":"yí ge rén","e":"phr · alone, on one's own"},{"h":"跟…一起","p":"gēn … yìqǐ","e":"phr · together with… (我跟家人一起)"},{"h":"家人","p":"jiārén","e":"n · family members"},{"h":"哪里哪里","p":"nǎli nǎli","e":"phr · \"not at all\" — the reflex for deflecting a compliment"},{"h":"还差得远","p":"hái chà de yuǎn","e":"phr · \"I've still got a long way to go\" — modest reply to praise"},{"h":"旅游","p":"lǚyóu","e":"v · to travel, to tour"},{"h":"出差","p":"chūchāi","e":"v · to be on a business trip"},{"h":"到处","p":"dàochù","e":"adv · everywhere, all around (到处走走 = wander around)"},{"h":"尽管","p":"jǐnguǎn","e":"adv · go ahead and…, feel free to (尽管说 = just say it)"},{"h":"打听","p":"dǎting","e":"v · to ask around, to make inquiries"},{"h":"本地人","p":"běndìrén","e":"n · a local, locals"},{"h":"一般","p":"yìbān","e":"adv · usually, generally"},{"h":"游客","p":"yóukè","e":"n · tourist"},{"h":"地道","p":"dìdao","e":"adj · authentic, the real thing (of food/a place)"},{"h":"正宗","p":"zhèngzōng","e":"adj · authentic, orthodox (of a cuisine/brand)"},{"h":"巷子","p":"xiàngzi","e":"n · a lane, an alley"},{"h":"老店","p":"lǎodiàn","e":"n · a long-established shop"},{"h":"招牌","p":"zhāopai","e":"n · signboard; a place's signature dish (招牌菜)"},{"h":"认","p":"rèn","e":"v · to recognize, to swear by (老西安都认)"},{"h":"听起来","p":"tīng qǐlái","e":"phr · sounds (like)… (听起来不错 = sounds good)"},{"h":"走路","p":"zǒulù","e":"v · to walk, to go on foot"},{"h":"十来分钟","p":"shí lái fēnzhōng","e":"phr · about ten minutes (数+来 = roughly)"},{"h":"除了","p":"chúle","e":"prep · besides, apart from (除了…还… = besides X, also Y)"},{"h":"值得","p":"zhídé","e":"v · to be worth (值得看 = worth seeing)"},{"h":"城墙","p":"chéngqiáng","e":"n · city wall (Xi'an's is the landmark)"},{"h":"网红店","p":"wǎnghóngdiàn","e":"n · an \"internet-famous\" spot — trendy, often a tourist trap"},{"h":"记一下","p":"jì yíxià","e":"phr · to jot it down, make a note"},{"h":"推荐","p":"tuījiàn","e":"v · to recommend"},{"h":"帮大忙","p":"bāng dà máng","e":"phr · to be a big help"},{"h":"客气","p":"kèqi","e":"adj · polite, formal; 客气什么 = \"don't be so formal\""},{"h":"投缘","p":"tóuyuán","e":"adj · to hit it off, to click with someone"},{"h":"加微信","p":"jiā Wēixìn","e":"phr · to add (sb) on WeChat — the normal \"nice to meet you\""},{"h":"常联系","p":"cháng liánxì","e":"phr · keep in touch (lit. contact often)"},{"h":"要是","p":"yàoshi","e":"conj · if (casual 如果) — 要是…就…"},{"h":"注意安全","p":"zhùyì ānquán","e":"phr · take care, stay safe"},{"h":"一路顺风","p":"yílù shùnfēng","e":"phr · safe travels, bon voyage"},{"h":"玩得开心","p":"wán de kāixīn","e":"phr · to have a great time (玩得很开心)"},{"h":"保重","p":"bǎozhòng","e":"v · take care (of yourself) — a warm goodbye"},{"h":"有空","p":"yǒu kòng","e":"phr · to have free time (有空常联系)"},{"h":"还是","p":"háishì","e":"conj · or (inside a question)"},{"h":"一定","p":"yídìng","e":"adv · definitely, for sure"},{"h":"以后","p":"yǐhòu","e":"adv · later, from now on"}]}],"seedKnown":["多久","现金","一共","免费","换","师傅","麻烦您了","堵","赶时间","没事","明白","马上","对了","左右"]};
+  var KEY = "sm-flashcards-v1";
+
+  // ---- saved state (per device) ----
+  var S = {known:{}, dir:"zh", hideKnown:true, seeded:false};
+  try { var raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch(e){}
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
+
+  var ALL = [];
+  DATA.decks.forEach(function(d){
+    d.cards.forEach(function(c){ c.id = d.id + ":" + c.h; c.deck = d; ALL.push(c); });
+  });
+  if (!S.seeded) {                       // the course page pre-marked these as known
+    DATA.decks.filter(function(d){ return d.id === "w1v"; }).forEach(function(d){
+      d.cards.forEach(function(c){ if (DATA.seedKnown.indexOf(c.h) >= 0) S.known[c.id] = true; });
+    });
+    S.seeded = true; save();
+  }
+
+  var $ = function(id){ return document.getElementById(id); };
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  function show(id){ ["home","study","done"].forEach(function(x){ $(x).hidden = x !== id; }); window.scrollTo(0,0); }
+
+  // ---- home ----
+  function renderHome(){
+    var k = ALL.filter(function(c){ return S.known[c.id]; }).length;
+    $("homeSub").textContent = ALL.length + " cards · " + k + " known · " + (ALL.length - k) + " still learning";
+    var html = "";
+    DATA.weeks.forEach(function(w){
+      var decks = DATA.decks.filter(function(d){ return d.week === w.n; });
+      html += '<section class="wk"><div class="wk-h"><span class="b">' + esc(w.badge) + '</span><span class="t">' + esc(w.title) + '</span>' +
+        (decks.length > 1 ? '<button class="all" data-week="' + w.n + '">Whole week ›</button>' : '') + '</div>';
+      decks.forEach(function(d){
+        var kn = d.cards.filter(function(c){ return S.known[c.id]; }).length;
+        html += '<button class="deck" data-deck="' + d.id + '"><div class="body"><div class="nm">' + esc(d.name) + '</div>' +
+          '<div class="ct">' + kn + ' / ' + d.cards.length + ' known</div><div class="bar"><i style="width:' + Math.round(100*kn/d.cards.length) + '%"></i></div></div>' +
+          '<span class="go">›</span></button>';
+      });
+      html += '</section>';
+    });
+    $("weeks").innerHTML = html;
+  }
+  $("weeks").addEventListener("click", function(e){
+    var b = e.target.closest("[data-deck],[data-week]"); if (!b) return;
+    if (b.dataset.deck) {
+      var d = DATA.decks.filter(function(x){ return x.id === b.dataset.deck; })[0];
+      start(d.cards, d.name, "Week " + d.week);
+    } else {
+      var n = +b.dataset.week, w = DATA.weeks[n-1];
+      start(ALL.filter(function(c){ return c.deck.week === n; }), "Whole week", w.badge + " · " + w.title);
+    }
+  });
+  $("mixAll").onclick = function(){ start(ALL, "Everything", "All weeks", true); };
+
+  // ---- study session ----
+  var pool = [], deck = [], i = 0, flipped = false, title = "", subtitle = "", shuffled = false, missed = [];
+  function shuffle(a){ a = a.slice(); for (var j = a.length - 1; j > 0; j--) { var r = Math.floor(Math.random()*(j+1)); var t = a[j]; a[j] = a[r]; a[r] = t; } return a; }
+  function rebuild(){
+    var base = S.hideKnown ? pool.filter(function(c){ return !S.known[c.id]; }) : pool.slice();
+    deck = shuffled ? shuffle(base) : base;
+    i = 0;
+  }
+  function start(cards, t, st, forceShuffle){
+    pool = cards; title = t; subtitle = st; missed = [];
+    shuffled = !!forceShuffle;
+    rebuild();
+    if (!deck.length && S.hideKnown) { S.hideKnown = false; save(); rebuild(); }
+    show("study"); draw(true);
+  }
+  function opts(){
+    $("optDir").textContent = S.dir === "zh" ? "中文 first" : "English first";
+    $("optShuf").classList.toggle("on", shuffled);
+    var kn = pool.filter(function(c){ return S.known[c.id]; }).length;
+    $("optKnown").textContent = S.hideKnown ? "Show known (" + kn + ")" : "Hide known (" + kn + ")";
+    $("optKnown").classList.toggle("on", !S.hideKnown);
+  }
+  function draw(noanim){
+    opts();
+    $("sTitle").innerHTML = esc(title) + "<small>" + esc(subtitle) + "</small>";
+    if (i >= deck.length) return finish();
+    var c = deck[i], long = c.h.length > 6;
+    var tag = S.known[c.id] ? '<span class="known-tag">known</span>' : '';
+    var hanBig = '<div class="big-h' + (long ? ' long' : '') + '">' + esc(c.h) + '</div>';
+    if (S.dir === "zh") {
+      $("front").innerHTML = tag + hanBig + '<div class="hint">tap to flip</div>';
+      $("backF").innerHTML = tag + '<div class="h-sm">' + esc(c.h) + '</div><div class="py">' + esc(c.p) + '</div><div class="en">' + esc(c.e) + '</div>';
+    } else {
+      $("front").innerHTML = tag + '<div class="big-e">' + esc(c.e) + '</div><div class="hint">tap to flip</div>';
+      $("backF").innerHTML = tag + hanBig + '<div class="py">' + esc(c.p) + '</div>';
+    }
+    var card = $("card");
+    if (noanim) card.classList.add("noanim");
+    card.classList.remove("flip"); flipped = false;
+    if (noanim) { void card.offsetWidth; card.classList.remove("noanim"); }
+    $("sPos").textContent = (i + 1) + " / " + deck.length;
+  }
+  function next(){ i++; draw(true); }
+  $("card").onclick = function(){
+    flipped = !flipped; $("card").classList.toggle("flip", flipped);
+    if (flipped && S.dir === "en") say();
+  };
+  $("knowBtn").onclick = function(){ if (i < deck.length) { S.known[deck[i].id] = true; save(); next(); } };
+  $("learnBtn").onclick = function(){
+    if (i < deck.length) { var c = deck[i]; delete S.known[c.id]; save(); if (missed.indexOf(c) < 0) missed.push(c); next(); }
+  };
+  $("skipBtn").onclick = function(){ if (i < deck.length) next(); };
+  $("prevBtn").onclick = function(){ if (i > 0) { i--; draw(true); } };
+  $("optDir").onclick = function(){ S.dir = S.dir === "zh" ? "en" : "zh"; save(); draw(true); };
+  $("optShuf").onclick = function(){ shuffled = !shuffled; rebuild(); draw(true); };
+  $("optKnown").onclick = function(){ S.hideKnown = !S.hideKnown; save(); rebuild(); draw(true); };
+  $("backBtn").onclick = function(){ renderHome(); show("home"); };
+  $("homeBtn").onclick = function(){ renderHome(); show("home"); };
+
+  function finish(){
+    $("dTitle").textContent = "Round done";
+    $("dSub").textContent = missed.length ? missed.length + " card" + (missed.length === 1 ? "" : "s") + " still learning from this round." : "You knew every card this round.";
+    $("againBtn").hidden = !missed.length;
+    show("done");
+  }
+  $("againBtn").onclick = function(){
+    var m = missed.slice(); start(m, title, subtitle + " · retry", true);
+    if (!deck.length) { S.hideKnown = false; rebuild(); draw(true); }
+  };
+
+  // ---- speech (uses the phone's built-in Chinese voice; works offline if installed) ----
+  var zhVoice = null;
+  function pickVoice(){
+    if (!window.speechSynthesis) return;
+    var v = speechSynthesis.getVoices();
+    zhVoice = v.filter(function(x){ return /^zh[-_]CN/i.test(x.lang); })[0] || v.filter(function(x){ return /^zh/i.test(x.lang); })[0] || null;
+  }
+  if (window.speechSynthesis) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } else { $("sayBtn").hidden = true; }
+  function say(){
+    if (!window.speechSynthesis || i >= deck.length) return;
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(deck[i].h.replace(/\(.*?\)/g, ""));
+    u.lang = "zh-CN"; if (zhVoice) u.voice = zhVoice; u.rate = .85;
+    speechSynthesis.speak(u);
+  }
+  $("sayBtn").onclick = say;
+
+  // ---- reset (two taps, no confirm dialog) ----
+  var armed = null;
+  $("resetBtn").onclick = function(){
+    var b = $("resetBtn");
+    if (!armed) { b.textContent = "Tap again to erase all progress"; armed = setTimeout(function(){ armed = null; b.textContent = "Reset progress"; }, 3000); return; }
+    clearTimeout(armed); armed = null; S.known = {}; S.seeded = true; save(); b.textContent = "Reset progress"; renderHome();
+  };
+
+  renderHome();
+
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function(){});
+})();
+</script>
+</body>
+</html>
