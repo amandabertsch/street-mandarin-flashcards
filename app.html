@@ -46,6 +46,10 @@
   .wk-h .b{white-space:nowrap;flex:0 0 auto;font-family:var(--han);font-size:13px;font-weight:600;color:#fff;background:var(--jade);border-radius:7px;padding:2px 7px}
   .wk-h .t{font-weight:600;font-size:16px}
   .wk-h .all{white-space:nowrap;flex:0 0 auto;margin-left:auto;background:none;border:0;color:var(--jade);font-size:14px;font-weight:600;padding:4px 0}
+  .deck-r{display:flex;gap:8px;margin-bottom:8px}
+  .deck-r .deck{margin-bottom:0;flex:1;min-width:0}
+  .lbtn{flex:0 0 auto;width:64px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);color:var(--jade);font-size:12.5px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0}
+  .lbtn b{font-size:18px;line-height:1}
   .deck{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);
     border-radius:14px;padding:13px 14px;margin-bottom:8px;box-shadow:var(--shadow)}
   .deck:active{transform:scale(.99)}
@@ -95,7 +99,15 @@
   /* ---- list ---- */
   .scan{width:100%;margin:6px 0 4px;background:var(--card);color:var(--jade);border:1px solid var(--jade);border-radius:14px;padding:12px;font-weight:600;font-size:15.5px}
   .lst-sum{font-size:13px;color:var(--muted);margin:0 0 10px;font-variant-numeric:tabular-nums}
-  .lst-sec{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 2px 6px}
+  .lst-sec{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:12px 14px;margin:8px 0 0}
+  .lst-sec .sn{flex:1;min-width:0;font-weight:600;font-size:15px}
+  .lst-sec .sn small{display:block;font-weight:400;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .lst-sec .ar{color:var(--muted);font-size:18px;transition:transform .2s}
+  .lst-sec.open{border-radius:14px 14px 0 0;border-bottom-color:transparent;box-shadow:none}
+  .lst-sec.open .ar{transform:rotate(90deg)}
+  .lst-sec + .rows{border-radius:0 0 14px 14px;border-top-color:var(--line)}
+  .lst-wk{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:20px 2px 2px;font-family:var(--han)}
+  .lst-tools{display:flex;justify-content:flex-end;margin:-4px 0 0}
   .rows{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
   .row{display:flex;align-items:center;gap:12px;padding:10px 6px 10px 14px;border-top:1px solid var(--line)}
   .row:first-child{border-top:0}
@@ -179,6 +191,7 @@
       <button class="opt" id="optHideE">Hide meaning</button>
     </div>
     <p class="lst-sum" id="lSum"></p>
+    <div class="lst-tools" id="lTools"><button class="lnk" id="lToggleAll">Expand all</button></div>
     <div class="lst" id="lBody"></div>
   </main>
 
@@ -231,17 +244,20 @@
         (decks.length > 1 ? '<button class="all" data-week="' + w.n + '">Whole week ›</button>' : '') + '</div>';
       decks.forEach(function(d){
         var kn = d.cards.filter(function(c){ return S.known[c.id]; }).length;
-        html += '<button class="deck" data-deck="' + d.id + '"><div class="body"><div class="nm">' + esc(d.name) + '</div>' +
+        html += '<div class="deck-r"><button class="deck" data-deck="' + d.id + '"><div class="body"><div class="nm">' + esc(d.name) + '</div>' +
           '<div class="ct">' + kn + ' / ' + d.cards.length + ' known</div><div class="bar"><i style="width:' + Math.round(100*kn/d.cards.length) + '%"></i></div></div>' +
-          '<span class="go">›</span></button>';
+          '<span class="go">›</span></button><button class="lbtn" data-list="' + d.id + '" aria-label="List ' + esc(d.name) + '"><b>☰</b>List</button></div>';
       });
       html += '</section>';
     });
     $("weeks").innerHTML = html;
   }
   $("weeks").addEventListener("click", function(e){
-    var b = e.target.closest("[data-deck],[data-week]"); if (!b) return;
-    if (b.dataset.deck) {
+    var b = e.target.closest("[data-deck],[data-week],[data-list]"); if (!b) return;
+    if (b.dataset.list) {
+      var ld = DATA.decks.filter(function(x){ return x.id === b.dataset.list; })[0];
+      openList(ld.cards, ld.name, "Week " + ld.week, "home");
+    } else if (b.dataset.deck) {
       var d = DATA.decks.filter(function(x){ return x.id === b.dataset.deck; })[0];
       start(d.cards, d.name, "Week " + d.week);
     } else {
@@ -322,7 +338,7 @@
   };
 
   // ---- list view ----
-  var lPool = [], lFrom = "home", lFilter = "all", lHideE = false, lTitle = "", lSub = "";
+  var lPool = [], lFrom = "home", lFilter = "all", lHideE = false, lTitle = "", lSub = "", lOpen = {};
   function openList(cards, t, st, from){
     lPool = cards; lTitle = t; lSub = st; lFrom = from; lFilter = "all";
     show("list"); drawList();
@@ -339,12 +355,25 @@
     listSum();
     var cards = lPool.filter(function(c){ return lFilter === "all" || (lFilter === "known") === !!S.known[c.id]; });
     if (!cards.length) { $("lBody").innerHTML = '<div class="lst-empty">' + (lFilter === "known" ? "Nothing marked known here yet." : "Nothing left to learn here. 好！") + '</div>'; return; }
-    var multi = cards.some(function(c){ return c.deck !== cards[0].deck; }), html = "", cur = null;
+    var multi = cards.some(function(c){ return c.deck !== cards[0].deck; }), html = "", cur = null, wk = null;
+    $("lTools").hidden = !multi;
+    if (multi) {
+      var allOpen = DATA.decks.every(function(d){ return lOpen[d.id]; });
+      $("lToggleAll").textContent = allOpen ? "Collapse all" : "Expand all";
+    }
     cards.forEach(function(c){
       if (c.deck !== cur) {
         if (cur) html += '</div>';
-        if (multi) html += '<div class="lst-sec">Week ' + c.deck.week + ' · ' + esc(c.deck.name) + '</div>';
-        html += '<div class="rows">'; cur = c.deck;
+        cur = c.deck;
+        if (multi) {
+          if (cur.week !== wk) { wk = cur.week; var w = DATA.weeks[wk-1]; html += '<div class="lst-wk">' + esc(w.badge) + ' · ' + esc(w.title) + '</div>'; }
+          var inSec = cards.filter(function(x){ return x.deck === cur; });
+          var kn = cur.cards.filter(function(x){ return S.known[x.id]; }).length;
+          var open = !!lOpen[cur.id];
+          html += '<button class="lst-sec' + (open ? ' open' : '') + '" data-sec="' + cur.id + '"><span class="sn">' + esc(cur.name) +
+            '<small>' + (lFilter === "all" ? kn + ' / ' + cur.cards.length + ' known' : inSec.length + ' word' + (inSec.length === 1 ? '' : 's')) + '</small></span><span class="ar">›</span></button>';
+          html += '<div class="rows"' + (open ? '' : ' hidden') + '>';
+        } else html += '<div class="rows">';
       }
       html += '<div class="row' + (S.known[c.id] ? ' kn' : '') + '" data-id="' + esc(c.id) + '">' +
         '<button class="txt"><span class="rh">' + esc(c.h) + '</span><span class="rp">' + esc(c.p) + '</span><span class="re">' + esc(c.e) + '</span></button>' +
@@ -354,11 +383,15 @@
   }
   var BYID = {}; ALL.forEach(function(c){ BYID[c.id] = c; });
   $("lBody").addEventListener("click", function(e){
+    var sec = e.target.closest("[data-sec]");
+    if (sec) { lOpen[sec.dataset.sec] = !lOpen[sec.dataset.sec]; var y = sec.getBoundingClientRect().top; drawList(); var n = document.querySelector('[data-sec="' + sec.dataset.sec + '"]'); window.scrollBy(0, n.getBoundingClientRect().top - y); return; }
     var row = e.target.closest(".row"); if (!row) return;
     var c = BYID[row.dataset.id];
     if (e.target.closest(".chk")) {          // toggle known; row stays put until the filter changes
       if (S.known[c.id]) delete S.known[c.id]; else S.known[c.id] = true;
       save(); row.classList.toggle("kn", !!S.known[c.id]); listSum();
+      var h = row.parentNode.previousElementSibling;
+      if (h && h.dataset.sec && lFilter === "all") { var d = c.deck; h.querySelector("small").textContent = d.cards.filter(function(x){ return S.known[x.id]; }).length + " / " + d.cards.length + " known"; }
     } else if (lHideE && !row.classList.contains("peek")) {
       row.classList.add("peek");
     } else {
@@ -368,6 +401,10 @@
   Array.prototype.forEach.call(document.querySelectorAll("#list [data-f]"), function(b){
     b.onclick = function(){ lFilter = b.dataset.f; drawList(); };
   });
+  $("lToggleAll").onclick = function(){
+    var allOpen = DATA.decks.every(function(d){ return lOpen[d.id]; });
+    DATA.decks.forEach(function(d){ lOpen[d.id] = !allOpen; }); drawList();
+  };
   $("optHideE").onclick = function(){ lHideE = !lHideE; drawList(); };
   $("lBack").onclick = function(){
     if (lFrom === "study") { rebuild(); show("study"); draw(true); } else { renderHome(); show("home"); }
